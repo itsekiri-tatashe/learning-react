@@ -2,12 +2,13 @@ import { useState } from "react";
 import ExpenseTable from "./components/expense-project/ExpenseTable";
 import ExpenseForm from "./components/expense-project/ExpenseForm";
 import { Expense } from "./components/expense-project/ExpenseInterfaces";
+import ExpenseFilter from "./components/expense-project/ExpenseFilter";
 
 // Define a TypeScript type for expense entries
 function App() {
-
   // Dummy Data
   const [expenseData, setExpenseData] = useState<Expense[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   // Add Expense
   const addExpense = (expense: any) => {
@@ -19,10 +20,18 @@ function App() {
     setExpenseData(expenseData.filter((expense) => expense.id !== id));
   };
 
+  // Filter Table
+  const visbleExpense = selectedCategory
+    ? expenseData.filter((expense) => expense.category === selectedCategory)
+    : expenseData;
+
   return (
     <>
       <ExpenseForm addExpense={addExpense} />
-      <ExpenseTable expenseData={expenseData} onClick={deleteExpense} />
+      <ExpenseFilter
+        selectCategory={(category) => setSelectedCategory(category)}
+      />
+      <ExpenseTable expenseData={visbleExpense} onClick={deleteExpense} />
     </>
   );
 }
