@@ -1,25 +1,27 @@
 import { useState } from "react";
 import ExpenseTable from "./components/expense-project/ExpenseTable";
+import ExpenseForm from "./components/expense-project/ExpenseForm";
+import { Expense } from "./components/expense-project/ExpenseInterfaces";
 
 // Define a TypeScript type for expense entries
 function App() {
-  const [categories] = useState(["Groceries", "Utilities", "Entertainment"]);
 
   // Dummy Data
-  const [expenseData, setExpenseData] = useState([
-    { id: 1, description: "Milk", amount: 15, category: "Groceries" },
-    { id: 2, description: "Electricity", amount: 5.29, category: "Utilities" },
-    { id: 3, description: "Spotify", amount: 7, category: "Entertainment" },
-    { id: 4, description: "Netflix", amount: 12, category: "Entertainment" },
-  ]);
+  const [expenseData, setExpenseData] = useState<Expense[]>([]);
+
+  // Add Expense
+  const addExpense = (expense: any) => {
+    setExpenseData([...expenseData, { ...expense, id: Date.now() }]);
+  };
 
   // Delete Object from List
-  const deleteExpense = (index: number) => {
-    setExpenseData(expenseData.filter((expense) => expense.id !== index));
+  const deleteExpense = (id: number) => {
+    setExpenseData(expenseData.filter((expense) => expense.id !== id));
   };
 
   return (
     <>
+      <ExpenseForm addExpense={addExpense} />
       <ExpenseTable expenseData={expenseData} onClick={deleteExpense} />
     </>
   );
