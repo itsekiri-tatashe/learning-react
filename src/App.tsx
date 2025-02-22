@@ -13,16 +13,24 @@ function App() {
   useEffect(() => {
     const controller = new AbortController();
 
-    
+    setLoading(true);
     axios
       .get<User[]>("https://jsonplaceholder.typicode.com/users", {
         signal: controller.signal,
       })
-      .then((response) => setUsers(response.data))
+      .then((response) => {
+        setUsers(response.data);
+        setLoading(false);
+      })
       .catch((error) => {
         if (error instanceof CanceledError) return;
         setError(error.message);
-      });
+        setLoading(false);
+      })
+      // Works only on prod not dev cause of strict mode
+      // .finally(() => {
+      //   setLoading(false);
+      // });
 
     // Cancelled fetch request
     return () => controller.abort();
@@ -30,6 +38,7 @@ function App() {
 
   return (
     <>
+      {isLoading && <div className="spinner-border"></div>}
       {error && <p className="text-danger"> {error}</p>}
       <ul className="list-group">
         {users.map((user) => (
