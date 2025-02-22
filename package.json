@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
+    "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "immer": "^10.1.1",
     "react": "^19.0.0",
