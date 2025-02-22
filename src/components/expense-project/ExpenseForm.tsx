@@ -2,6 +2,7 @@ import { useForm, FieldValues } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"; //integrating Zod with HookForm
 import { categories } from "./ExpenseInterfaces";
+import { useEffect } from "react";
 
 const schema = z.object({
   description: z
@@ -22,17 +23,33 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 interface Props {
-  addExpense: (data: FieldValues) => void;
+  saveExpense: (data: FieldValues) => void;
+  editingExpense: FieldValues | null;
 }
 
-const ExpenseForm = ({ addExpense }: Props) => {
+const ExpenseForm = ({ saveExpense, editingExpense }: Props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    setValue,
+    reset,
+    formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
-  const onSubmit = (data: FieldValues) => addExpense(data);
+  useEffect(() => {
+    if (editingExpense) {
+      setValue("description", editingExpense.description);
+      setValue("amount", editingExpense.amount);
+      setValue("category", editingExpense.category);
+    } else {
+      reset(); // Clears the form when adding a new expense
+    }
+  }, [editingExpense, setValue, reset]);
+
+  const onSubmit = (data: FieldValues) => {
+    saveExpense(data);
+    reset();
+  }; // Reset form after submission};
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -91,7 +108,7 @@ const ExpenseForm = ({ addExpense }: Props) => {
       </div>
 
       <button className="btn btn-primary" type="submit">
-        Submit
+        {editingExpense ? "Update Expense" : "Add Expense"}
       </button>
     </form>
   );

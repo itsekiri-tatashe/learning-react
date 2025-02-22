@@ -10,9 +10,27 @@ function App() {
   const [expenseData, setExpenseData] = useState<Expense[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  // Add Expense
-  const addExpense = (expense: any) => {
-    setExpenseData([...expenseData, { ...expense, id: Date.now() }]);
+  // State for edit, if set to null add a new expense else edit an existing expense
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+
+
+  // Add or Edit Expense
+  const saveExpense = (expense: any) => {
+    if (editingExpense) {
+      // Update existing expense
+      setExpenseData((prev) =>
+        prev.map((item) => (item.id === editingExpense.id ? { ...expense, id: editingExpense.id } : item))
+      );
+      setEditingExpense(null); // Reset after editing
+    } else {
+      // Add new expense
+      setExpenseData([...expenseData, { ...expense, id: Date.now() }]);
+    }
+  };
+
+  // Edit Expense
+  const editExpense = (expense: Expense) => {
+    setEditingExpense(expense);
   };
 
   // Delete Object from List
@@ -27,11 +45,15 @@ function App() {
 
   return (
     <>
-      <ExpenseForm addExpense={addExpense} />
+      <ExpenseForm saveExpense={saveExpense} editingExpense={editingExpense} />
       <ExpenseFilter
         selectCategory={(category) => setSelectedCategory(category)}
       />
-      <ExpenseTable expenseData={visbleExpense} onClick={deleteExpense} />
+      <ExpenseTable
+        expenseData={visbleExpense}
+        onDelete={deleteExpense}
+        onEdit={editExpense}
+      />
     </>
   );
 }
