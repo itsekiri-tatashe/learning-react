@@ -1,9 +1,12 @@
 import axios, { AxiosError, CanceledError } from "axios";
 import { useEffect, useState } from "react";
+import ToastNotification from "./components/ToastNotification";
 
 interface User {
   id: number;
-  name: string;
+  // name: string;
+  first_name: string;
+  last_name: string;
 }
 function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -15,35 +18,78 @@ function App() {
 
     setLoading(true);
     axios
-      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+      // .get<User[]>("https://jsonplaceholder.typicode.com/users", {
+      .get("https://reqres.in/api/users", {
         signal: controller.signal,
       })
       .then((response) => {
-        setUsers(response.data);
+        console.log(response);
+        setUsers(response.data.data);
         setLoading(false);
       })
       .catch((error) => {
         if (error instanceof CanceledError) return;
         setError(error.message);
         setLoading(false);
-      })
-      // Works only on prod not dev cause of strict mode
-      // .finally(() => {
-      //   setLoading(false);
-      // });
+      });
+    // Works only on prod not dev cause of strict mode
+    // .finally(() => {
+    //   setLoading(false);
+    // });
 
     // Cancelled fetch request
     return () => controller.abort();
   }, []);
 
+  // useEffect(() => {
+  //   axios.get<User[]>("https://dummyjson.com/users").then((response) => {
+  //     setUsers(response.data);
+  //   });
+  // }, []);
+
+  // delete user
+  const deleteUser = (id: number) => {
+    const originalUsers = [...users];
+    setUsers(users.filter((user) => user.id !== id));
+
+    axios
+      // .delete(`https://jsonplaceholder.typicode.com/users/${id}`)
+      .delete(`https://reqres.in/api/users`)
+      .catch((error) => {
+        setError(error.message);
+        setUsers(originalUsers);
+      });
+  };
+
   return (
     <>
-      {isLoading && <div className="spinner-border"></div>}
-      {error && <p className="text-danger"> {error}</p>}
+      {/* Loader */}
+      {isLoading && (
+        <div className="d-flex justify-content-center">
+          <div
+            className="spinner-border"
+            role="status"
+            style={{ width: "3rem", height: "3rem" }}
+          >
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      )}
+      {error && <ToastNotification message={error} />}
       <ul className="list-group">
         {users.map((user) => (
-          <li className="list-group-item" key={user.id}>
-            {user.name}
+          <li
+            className="list-group-item d-flex justify-content-between"
+            key={user.id}
+          >
+            {/* {user.name} */}
+            {`${user.first_name} ${user.last_name}`}
+            <button
+              className="btn btn-outline-danger"
+              onClick={() => deleteUser(user.id)}
+            >
+              Delete
+            </button>
           </li>
         ))}
       </ul>
