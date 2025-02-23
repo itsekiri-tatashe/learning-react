@@ -41,12 +41,6 @@ function App() {
     return () => controller.abort();
   }, []);
 
-  // useEffect(() => {
-  //   axios.get<User[]>("https://dummyjson.com/users").then((response) => {
-  //     setUsers(response.data);
-  //   });
-  // }, []);
-
   // delete user
   const deleteUser = (id: number) => {
     const originalUsers = [...users];
@@ -61,8 +55,14 @@ function App() {
       });
   };
 
+  // add users
+  const addUser = () => {
+    const newUser = {};
+  };
+
   return (
     <>
+      {error && <ToastNotification message={error} />}
       {/* Loader */}
       {isLoading && (
         <div className="d-flex justify-content-center">
@@ -75,7 +75,9 @@ function App() {
           </div>
         </div>
       )}
-      {error && <ToastNotification message={error} />}
+      <button className="btn btn-primary m-3" onClick={() => addUser}>
+        Add
+      </button>
       <ul className="list-group">
         {users.map((user) => (
           <li
