@@ -4,9 +4,7 @@ import ToastNotification from "./components/ToastNotification";
 
 interface User {
   id: number;
-  // name: string;
-  first_name: string;
-  last_name: string;
+  name: string;
 }
 function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -18,13 +16,11 @@ function App() {
 
     setLoading(true);
     axios
-      // .get<User[]>("https://jsonplaceholder.typicode.com/users", {
-      .get("https://reqres.in/api/users", {
+      .get<User[]>("https://jsonplaceholder.typicode.com/users", {
         signal: controller.signal,
       })
       .then((response) => {
-        console.log(response);
-        setUsers(response.data.data);
+        setUsers(response.data);
         setLoading(false);
       })
       .catch((error) => {
@@ -47,8 +43,7 @@ function App() {
     setUsers(users.filter((user) => user.id !== id));
 
     axios
-      // .delete(`https://jsonplaceholder.typicode.com/users/${id}`)
-      .delete(`https://reqres.in/api/users`)
+      .delete(`https://jsonplaceholder.typicode.com/xusers/${id}`)
       .catch((error) => {
         setError(error.message);
         setUsers(originalUsers);
@@ -84,8 +79,7 @@ function App() {
             className="list-group-item d-flex justify-content-between"
             key={user.id}
           >
-            {/* {user.name} */}
-            {`${user.first_name} ${user.last_name}`}
+            {user.name}
             <button
               className="btn btn-outline-danger"
               onClick={() => deleteUser(user.id)}
